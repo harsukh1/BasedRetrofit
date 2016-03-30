@@ -1,5 +1,7 @@
 package com.singh.harsukh.testingapp;
 
+import android.util.Log;
+
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.singh.harsukh.testingapp.RedditServiceTest.RedditServiceManager;
 
@@ -22,10 +24,14 @@ import org.robolectric.internal.Shadow;
 import org.robolectric.shadows.httpclient.FakeHttp;
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * Created by harsukh on 3/29/16.
@@ -42,7 +48,8 @@ public class NetworkResponseTest {
       service = RedditServiceManager.createService("http://localhost:8089/"
                 , RedditServiceManager.RedditServiceInterface.class);
 
-        assertTh
+        assertNotNull(service);
+        FakeHttp.getFakeHttpLayer().interceptHttpRequests(false);
     }
 
     @Rule
@@ -55,6 +62,15 @@ public class NetworkResponseTest {
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBodyFile("reddit_response.json")));
+        Call<Titles> call = service.getTitles();
+        assertNotNull(call);
+        Response<Titles> response;
+        try {
+            response = call.execute();
+            Titles titles = response.body();
+        } catch (IOException e) {
+            Log.e("NetworkResponseTest", "Call not successful", e);
+        }
 
 
 //        Result result = myHttpServiceCallingObject.doSomething();
