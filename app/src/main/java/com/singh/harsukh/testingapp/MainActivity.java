@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<String> titles = new ArrayList();
                 try {
                     URL url = new URL(params[0]);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream(), "UTF-8"));
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(url.openConnection().getInputStream(), "UTF-8"), 2048);
                     String json = reader.readLine();
                     StringBuffer buffer = new StringBuffer();
                     buffer.append(json);

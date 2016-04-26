@@ -24,14 +24,16 @@ public class RedditServiceManager {
     }
 
     private static Retrofit retrofit = null;
-
-    public static <S> S createService(String BASE,Class<S> serviceClass )
+    private static BaseResource resource = new BaseResource();
+    public static <S> S createService(String url_resource, Class<S> serviceClass)
     {
-       Retrofit.Builder builder = new Retrofit.Builder().baseUrl(BASE)
-                .addConverterFactory(GsonConverterFactory.create());
+        Retrofit.Builder builder;
         if(retrofit == null) {
+            builder = new Retrofit.Builder().baseUrl(resource)
+                    .addConverterFactory(GsonConverterFactory.create());
             retrofit = builder.client(buildLogger()).build();
         }
+        resource.setUrl(url_resource);
         return retrofit.create(serviceClass);
     }
 

@@ -1,5 +1,6 @@
 package com.singh.harsukh.testingapp;
 
+import android.os.Build;
 import android.util.Log;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -20,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 import org.robolectric.internal.Shadow;
 import org.robolectric.shadows.httpclient.FakeHttp;
 import static org.junit.Assert.*;
@@ -36,6 +38,7 @@ import retrofit2.Response;
 /**
  * Created by harsukh on 3/29/16.
  */
+@Config(constants = com.singh.harsukh.testingapp.BuildConfig.class, sdk = Build.VERSION_CODES.JELLY_BEAN)
 @RunWith(RobolectricGradleTestRunner.class)
 public class NetworkResponseTest {
 
@@ -43,9 +46,7 @@ public class NetworkResponseTest {
     @Before
     public void setUp()
     {
-        //FakeHttp.setDefaultHttpResponse(200, "OK");
-        //activity = Robolectric.buildActivity(MainActivity.class).create().get();
-      service = RedditServiceManager.createService("http://localhost:8089/"
+      service = RedditServiceManager.createService("http://localhost:9090/"
                 , RedditServiceManager.RedditServiceInterface.class);
 
         assertNotNull(service);
@@ -53,7 +54,7 @@ public class NetworkResponseTest {
     }
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(8089);
+    public WireMockRule wireMockRule = new WireMockRule(9090);
 
     @Test
     public void testResponse()  {
@@ -65,21 +66,13 @@ public class NetworkResponseTest {
         Call<Titles> call = service.getTitles();
         assertNotNull(call);
         Response<Titles> response;
+        Titles titles;
         try {
             response = call.execute();
-            Titles titles = response.body();
+            titles = response.body();
+            assert titles.getData().getChildren().size() >0 ;
         } catch (IOException e) {
             Log.e("NetworkResponseTest", "Call not successful", e);
         }
-
-
-//        Result result = myHttpServiceCallingObject.doSomething();
-//
-//        assertTrue(result.wasSuccessFul());
-//
-//        verify(postRequestedFor(urlMatching("/my/resource/[a-z0-9]+"))
-//                .withRequestBody(matching(".*<message>1234</message>.*"))
-//                .withHeader("Content-Type", notMatching("application/json")));
-
     }
 }
